@@ -3,11 +3,12 @@ from json import load
 
 from api_keys import *
 
-apiUrl_usda = "http://api.nal.usda.gov/ndb/nutrients/?format=json&max=3&api_key=USDA_KEY&"
+apiUrl_usda = "http://api.nal.usda.gov/ndb/nutrients/?format=json&max=1&api_key=" + USDA_KEY + "&"
 
 def nutrient_search():
 	global nutrient_id
 	global high_or_low
+	global nutrient_choice
 	print "Select one from the following: calcium, carbohydrate, cholesterol, fat, fiber, iron, magnesium, phosphorus, potassium, protein, sodium, vitamin A, vitamin B-6, vitamin B-12, vitamin C, vitamin D, vitamin E, vitamin K, zinc"
 
 	nutrient_choice = raw_input("Which nutrient are you interested in? ").lower()
@@ -77,35 +78,46 @@ def nutrient_search():
 
 def food_options(nutrient):
 	global json_obj_usda
+	global list_of_foods
 	vegetarian_options = raw_input("Are you vegetarian, vegan, or neither? ").lower()
 
 	if vegetarian_options == 'neither':
 		food_list = apiUrl_usda + "nutrients=" + str(nutrient_id) + "&sort=c&fg=0100&fg=0500&fg=0900&fg=1000&fg=1100&fg=1200&fg=1300&fg=1500&fg=1600&fg=2000"
 		response_usda = urlopen(food_list)
 		json_obj_usda = load(response_usda)
-		return json_obj_usda
+		food_dictionary = json_obj_usda["report"]["foods"]
+		for i in food_dictionary:
+			list_of_foods = i["name"]
+		return list_of_foods
 	elif vegetarian_options == 'vegetarian':
 		food_list = apiUrl_usda + "nutrients=" + str(nutrient_id) + "&sort=c&fg=0100&fg=0900&fg=1100&fg=1200&fg=1600&fg=2000"
 		response_usda = urlopen(food_list)
 		json_obj_usda = load(response_usda)
-		return json_obj_usda
+		food_dictionary = json_obj_usda["report"]["foods"]
+		for i in food_dictionary:
+			list_of_foods = i["name"]
+		return list_of_foods
 	elif vegetarian_options == 'vegan':
 		food_list = apiUrl_usda + "nutrients=" + str(nutrient_id) + "&sort=c&fg=0900&fg=1100&fg=1200&fg=1600&fg=2000"
 		response_usda = urlopen(food_list)
 		json_obj_usda = load(response_usda)
-		return json_obj_usda
+		food_dictionary = json_obj_usda["report"]["foods"]
+		for i in food_dictionary:
+			list_of_foods = i["name"]
+		return list_of_foods
 	else:
 		print "We don't have information on that option, please select another"
 		food_options(nutrient_id)
 
-# def parse_data(list):
-# 	if high_or_low == 'high':
-# 		print "Try eating these foods high in " + nutrient_choice + ": " + [list]
-# 	elif high_or_low == 'low':
-# 		print "Try to avoid eating these foods high in " + nutrient_choice + ": " + [list]
-# 	else:
-# 		print "Sorry, I couldn't provide the information you requested. Please try again"
+def parse_data(list):
+	if high_or_low == 'high':
+		print "Try eating this food high in " + nutrient_choice + ": " + list_of_foods
+	elif high_or_low == 'low':
+		print "Try to avoid eating this food high in " + nutrient_choice + ": " + list_of_foods
+	else:
+		print "Sorry, I couldn't provide the information you requested. Please try again"
 	
 #def main():
 nutrient_search()
-print food_options(nutrient_id)
+food_options(nutrient_id)
+parse_data(list_of_foods)
