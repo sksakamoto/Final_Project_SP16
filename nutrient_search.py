@@ -1,6 +1,5 @@
 from urllib2 import urlopen
 from json import load
-
 from api_keys import *
 
 apiUrl_usda = "http://api.nal.usda.gov/ndb/nutrients/?format=json&max=1&api_key=" + USDA_KEY + "&"
