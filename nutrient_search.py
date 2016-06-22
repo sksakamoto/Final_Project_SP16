@@ -1,7 +1,7 @@
 from urllib2 import urlopen
 from json import load
 from api_keys import *
-from recipe_search import recipe_api_search
+from recipe_search import *
 
 apiUrl_usda = "http://api.nal.usda.gov/ndb/nutrients/?format=json&max=5&api_key=" + USDA_KEY + "&"
 
@@ -100,11 +100,11 @@ def food_options(nutrient):
 
 def parse_data(food_dictionary):
 	global high_or_low
-	high_or_low = raw_input("Do you need high content foods? (Y or N) ").lower()
+	high_or_low = raw_input("Do you need high content foods? [Y or N] ").lower()
 	list_of_foods = []
 	for i in food_dictionary:
 		if i["name"] not in list_of_foods:
-			list_of_foods.append(i["name"])
+			list_of_foods.append(str(i["name"]))
 	if high_or_low == 'y':
 		print "Try these foods with high amounts of " + nutrient_choice + ":"
 		return list_of_foods
@@ -118,9 +118,10 @@ def parse_data(food_dictionary):
 def recipe_lookup():
 	if high_or_low == 'y':
 		global reciple_choice
-		recipe_choice = raw_input("Do you want to see some recipes using those ingredients? (Y or N) ").lower()
+		recipe_choice = raw_input("Do you want to see some recipes using those ingredients? [Y or N] ").lower()
 		if recipe_choice == 'y':
-			return recipe_api_search()
+			recipe_api_search()
+			return url_display()
 		else:
 			return "Thank you for using this program"
 	else:
