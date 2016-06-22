@@ -20,5 +20,3 @@ def recipe_api_search():
 			return_recipe.append(i["source_url"])
 	print "Try one of these recipes:"
 	return return_recipe
-
-print recipe_api_search()

@@ -1,19 +1,17 @@
 from urllib2 import urlopen
 from json import load
 from api_keys import *
+from recipe_search import recipe_api_search
 
 apiUrl_usda = "http://api.nal.usda.gov/ndb/nutrients/?format=json&max=5&api_key=" + USDA_KEY + "&"
 
 def nutrient_search():
 	global nutrient_id
-	global high_or_low
 	global nutrient_choice
 	print "Select one from the following: calcium, carbohydrate, cholesterol, fat, fiber, iron, magnesium, phosphorus, potassium, protein, sodium, vitamin A, vitamin B-6, vitamin B-12, vitamin C, vitamin D, vitamin E, vitamin K, zinc"
 
 	nutrient_choice = raw_input("Which nutrient are you interested in? ").lower()
 	
-	high_or_low = raw_input("Do you want high content or low content foods? ").lower()
-
 	if nutrient_choice == 'protein':
 		nutrient_id = 203
 		return nutrient_id
@@ -100,21 +98,38 @@ def food_options(nutrient):
 		print "We don't have information on that option, please select another"
 		food_options(nutrient_id)
 
-def parse_data():
+def parse_data(food_dictionary):
+	global high_or_low
+	high_or_low = raw_input("Do you need high content foods? (Y or N) ").lower()
 	list_of_foods = []
 	for i in food_dictionary:
 		if i["name"] not in list_of_foods:
 			list_of_foods.append(i["name"])
-	if high_or_low == 'high':
-		print "Try eating these foods high in " + nutrient_choice + ":"
+	if high_or_low == 'y':
+		print "Try these foods with high amounts of " + nutrient_choice + ":"
 		return list_of_foods
-	elif high_or_low == 'low':
-		print "Try to avoid eating these foods high in " + nutrient_choice + ":"
+	elif high_or_low == 'n':
+		print "Try avoiding these foods with high amounts of " + nutrient_choice + ":"
 		return list_of_foods
 	else:
-		print "Sorry, I couldn't provide the information you requested. Please try again"
+		print "I didn't get that, please try again"
+		nutrient_search()
 	
+def recipe_lookup():
+	if high_or_low == 'y':
+		global reciple_choice
+		recipe_choice = raw_input("Do you want to see some recipes using those ingredients? (Y or N) ").lower()
+		if recipe_choice == 'y':
+			return recipe_api_search()
+		else:
+			return "Thank you for using this program"
+	else:
+		return "Thank you for using this program"
+
+
+
 #def main():
 nutrient_search()
 food_options(nutrient_id)
-print parse_data()
+print parse_data(food_dictionary)
+print recipe_lookup()
